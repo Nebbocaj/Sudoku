@@ -15,11 +15,14 @@ public class GameWindow extends JFrame implements ActionListener{
   
   public static final long serialVersionUID = 1;
   private JTextField[][] text = new JTextField[9][9];
+  private Label[][] value = new Label[9][9];
   private JPanel[][] tile = new JPanel[9][9];
   private Label instruction = new Label();
   private JButton next;
+  private Solver solver;
   private int size = 75;
   private char[][] board = new char[9][9];
+  private char[][] solution = new char[9][9];
   
   public GameWindow(String s)  {
     super(s);
@@ -47,6 +50,7 @@ public class GameWindow extends JFrame implements ActionListener{
     for (int i = 0; i < 9; i++) {
       basic.gridx = i;
       for (int j = 0; j < 9; j++) {
+        basic.gridx = i;
         basic.gridy = j + 1;
 
         tile[i][j] = new JPanel();
@@ -75,10 +79,21 @@ public class GameWindow extends JFrame implements ActionListener{
           tile[i][j].setBorder(new MatteBorder(1,1,5,5, Color.BLACK));
         
         this.add(tile[i][j], basic);
-    
+        
+        basic.gridy = 0;
+        basic.gridx = 0;
+        
         text[i][j] = new JTextField(1);
         text[i][j].addActionListener(this);
-        tile[i][j].add(text[i][j]);
+        tile[i][j].add(text[i][j], basic);
+    
+        basic.gridy = 1;
+        value[i][j] = new Label("0");
+        value[i][j].setFont(new Font("Verdana", Font.PLAIN, 30));
+        value[i][j].setForeground(new Color(132,112,114));
+        tile[i][j].add(value[i][j], basic);
+        
+
       }    
     }
     
@@ -97,10 +112,36 @@ public class GameWindow extends JFrame implements ActionListener{
   @Override
   public void actionPerformed(ActionEvent e) {
     if ("next".equals(e.getActionCommand())) {
-      System.out.println("hi");
-      
+      for(int i = 0; i < 9; i++) {
+        for (int  j = 0; j < 9; j++) {
+          String temp = text[i][j].getText();
+          try {
+            board[i][j] = temp.charAt(0);
+          }
+          catch (StringIndexOutOfBoundsException e1) {
+            board[i][j] = '0';
+          }
+          if (board[i][j] < '0' || board[i][j] > '9') {
+            System.out.println("Incorrect Value");
+            break;
+          }
+        }
+      }
+      solver = new Solver(9);
+      solution = solver.solveBoard(board);
+      showBoard(solution);
     }
-    
+  }
+  
+  public void showBoard(char[][] sol) {
+    for(int i = 0; i < 9; i++) {
+      for(int j = 0; j < 9; j++) {
+        tile[i][j].remove(text[i][j]);
+        value[i][j].setText("" + solution[i][j]);
+        value[i][j].setForeground(new Color(0,0,0));
+        this.repaint();
+      }
+    }
   }
 
 
