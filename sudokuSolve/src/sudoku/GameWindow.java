@@ -131,8 +131,8 @@ public class GameWindow extends JFrame implements ActionListener{
       solution = solver.solveBoard(board);
       showBoard(solution);
     }
-  }
-  
+  }  
+     
   public void showBoard(char[][] sol) {
     for(int i = 0; i < 9; i++) {
       for(int j = 0; j < 9; j++) {
